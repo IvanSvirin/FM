@@ -49,11 +49,6 @@ public class MonitorActivity extends Activity {
         @Override
         public void onChange(ChangeEvent event) {
 //            currentTrack = readTrack();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             new RetrieveContentsAsyncTask(currentTrack).execute();
             StringBuilder sb = new StringBuilder();
             sb.append("Positions");
@@ -71,7 +66,7 @@ public class MonitorActivity extends Activity {
     }
 
     private ArrayList<Position> readTrack() {
-        FileInputStream fileInputStream = null;
+        FileInputStream fileInputStream;
         try {
             fileInputStream = openFileInput("appconfig.txt");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
@@ -94,7 +89,7 @@ public class MonitorActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            FileInputStream fileInputStream = null;
+            FileInputStream fileInputStream;
 
             DriveFile file = MainActivity.driveId.asDriveFile();
             try {

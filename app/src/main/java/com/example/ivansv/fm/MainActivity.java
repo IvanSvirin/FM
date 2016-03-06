@@ -24,6 +24,8 @@ import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.Metadata;
+import com.google.android.gms.drive.MetadataBuffer;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.Query;
@@ -158,13 +160,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             new ResultCallback<DriveApi.MetadataBufferResult>() {
                 @Override
                 public void onResult(DriveApi.MetadataBufferResult result) {
-                    if (!result.getStatus().isSuccess()) {
+                    if (result.getMetadataBuffer().getCount() == 0) {
                         // create new contents resource
                         Drive.DriveApi.newDriveContents(getGoogleApiClient())
                                 .setResultCallback(driveContentsCallback);
                         return;
                     }
-                    driveId = result.getMetadataBuffer().get(0).getDriveId();/////????????
+                    MetadataBuffer mdb = result.getMetadataBuffer();
+                    Metadata md = mdb.get(0);
+                    driveId = md.getDriveId();
+//                    Metadata md = mdb.get(36);
+//                    driveId = md.getDriveId();
+//                    for (Metadata md : mdb) {
+//                        driveId = md.getDriveId();
+//                    }
                 }
             };
 
@@ -182,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             .setMimeType("text/plain")
                             .build();
                     Drive.DriveApi.getRootFolder(getGoogleApiClient())
-                            .createFile(getGoogleApiClient(), changeSet, result.getDriveContents())
+                            .createFile(getGoogleApiClient(), changeSet, null)
                             .setResultCallback(fileCallback);
                 }
             };
