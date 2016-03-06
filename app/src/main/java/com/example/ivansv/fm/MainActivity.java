@@ -25,6 +25,9 @@ import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.android.gms.drive.query.Filters;
+import com.google.android.gms.drive.query.Query;
+import com.google.android.gms.drive.query.SearchableField;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -144,12 +147,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        // create new contents resource
-        Drive.DriveApi.newDriveContents(getGoogleApiClient())
-                .setResultCallback(driveContentsCallback);
+        Query query = new Query.Builder()
+                .addFilter(Filters.contains(SearchableField.TITLE, "mediator"))
+                .build();
+        Drive.DriveApi.query(getGoogleApiClient(), query)
+                .setResultCallback(metadataCallback);
     }
 
-    // [START drive_contents_callback]
+    final private ResultCallback<DriveApi.MetadataBufferResult> metadataCallback =
+            new ResultCallback<DriveApi.MetadataBufferResult>() {
+                @Override
+                public void onResult(DriveApi.MetadataBufferResult result) {
+                    if (!result.getStatus().isSuccess()) {
+                        // create new contents resource
+                        Drive.DriveApi.newDriveContents(getGoogleApiClient())
+                                .setResultCallback(driveContentsCallback);
+                        return;
+                    }
+                    driveId = result.getMetadataBuffer().get(0).getDriveId();/////????????
+                }
+            };
+
     final private ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
             new ResultCallback<DriveApi.DriveContentsResult>() {
                 @Override
@@ -160,15 +178,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
 
                     MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                            .setTitle("appconfig.txt")
+                            .setTitle("mediator.txt")
                             .setMimeType("text/plain")
                             .build();
-                    Drive.DriveApi.getAppFolder(getGoogleApiClient())
+                    Drive.DriveApi.getRootFolder(getGoogleApiClient())
                             .createFile(getGoogleApiClient(), changeSet, result.getDriveContents())
                             .setResultCallback(fileCallback);
                 }
             };
-    // [END drive_contents_callback]
 
     final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
             ResultCallback<DriveFolder.DriveFileResult>() {
@@ -179,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         return;
                     }
                     driveId = result.getDriveFile().getDriveId();
-                    showMessage("Created a file in App Folder: " + driveId);
+                    showMessage("Created a file: " + driveId);
                 }
             };
 
