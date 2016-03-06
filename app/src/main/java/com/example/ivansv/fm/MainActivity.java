@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             googleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(Drive.API)
                     .addScope(Drive.SCOPE_FILE)
-                    .addScope(Drive.SCOPE_APPFOLDER) // required for App Folder sample
+//                    .addScope(Drive.SCOPE_APPFOLDER) // required for App Folder sample
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
