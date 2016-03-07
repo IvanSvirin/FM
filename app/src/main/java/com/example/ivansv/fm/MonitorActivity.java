@@ -1,25 +1,28 @@
 package com.example.ivansv.fm;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.events.ChangeEvent;
 import com.google.android.gms.drive.events.ChangeListener;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class MonitorActivity extends Activity {
+public class MonitorActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static ArrayList<Position> currentTrack = new ArrayList<>();
     //    private DriveId selectedFileId;
     private boolean isSubscribed = false;
@@ -27,11 +30,15 @@ public class MonitorActivity extends Activity {
     public static final String ALARM_LISTENER_ACTION = "alarm listener action";
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
+    public static GoogleMap gMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.monitor_activity);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         Intent intent = new Intent(this, AlarmListener.class);
         intent.setAction(ALARM_LISTENER_ACTION);
@@ -39,6 +46,11 @@ public class MonitorActivity extends Activity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 20 * 1000, pendingIntent);
         toggle();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        gMap = googleMap;
     }
 
     private void toggle() {

@@ -30,6 +30,10 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAEEhwrFRZIhJeP_HplM2LdLD2e5xjVQ_U" />
+
         <service
             android:name=".LocationTrackingService"
             android:enabled="true"
