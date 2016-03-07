@@ -36,6 +36,13 @@
             android:exported="true">
         </service>
 
+        <receiver
+            android:name=".AlarmListener">
+            <intent-filter>
+                <action android:name="com.example.ivansv.fm.ALARM_LISTENER_ACTION"/>
+            </intent-filter>
+            </receiver>
+
     </application>
 
 </manifest>

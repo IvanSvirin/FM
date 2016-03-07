@@ -1,10 +1,12 @@
 package com.example.ivansv.fm;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.widget.Toast;
 
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
@@ -18,16 +20,24 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 public class MonitorActivity extends Activity {
-    private ArrayList<Position> currentTrack = new ArrayList<>();
-//    private DriveId selectedFileId;
+    public static ArrayList<Position> currentTrack = new ArrayList<>();
+    //    private DriveId selectedFileId;
     private boolean isSubscribed = false;
-//    private GoogleApiClient googleApiClient;
+    //    private GoogleApiClient googleApiClient;
+    public static final String ALARM_LISTENER_ACTION = "alarm listener action";
+    private AlarmManager alarmManager;
+    private PendingIntent pendingIntent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.monitor_activity);
 
+        Intent intent = new Intent(this, AlarmListener.class);
+        intent.setAction(ALARM_LISTENER_ACTION);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 20 * 1000, pendingIntent);
         toggle();
     }
 
@@ -48,38 +58,17 @@ public class MonitorActivity extends Activity {
     final private ChangeListener changeListener = new ChangeListener() {
         @Override
         public void onChange(ChangeEvent event) {
-//            currentTrack = readTrack();
-            new RetrieveContentsAsyncTask(currentTrack).execute();
-            StringBuilder sb = new StringBuilder();
-            sb.append("Positions");
-            for (Position pos : currentTrack) {
-                sb.append(pos.getTime() + "-");
-            }
-            Toast.makeText(MonitorActivity.this, sb, Toast.LENGTH_SHORT).show();
         }
     };
 
     @Override
     protected void onPause() {
         toggle();
+        alarmManager.cancel(pendingIntent);
         super.onPause();
     }
 
-    private ArrayList<Position> readTrack() {
-        FileInputStream fileInputStream;
-        try {
-            fileInputStream = openFileInput("appconfig.txt");
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            ArrayList<Position> positions = (ArrayList<Position>) objectInputStream.readObject();
-            objectInputStream.close();
-            return positions;
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public class RetrieveContentsAsyncTask extends AsyncTask<Void, Void, Void> {
+    public static class RetrieveContentsAsyncTask extends AsyncTask<Void, Void, Void> {
         ArrayList<Position> positions;
 
         public RetrieveContentsAsyncTask(ArrayList<Position> positions) {
@@ -96,23 +85,14 @@ public class MonitorActivity extends Activity {
                 DriveApi.DriveContentsResult driveContentsResult = file.open(
                         MainActivity.googleApiClient, DriveFile.MODE_READ_WRITE, null).await();
                 if (!driveContentsResult.getStatus().isSuccess()) {
-                    Toast.makeText(MonitorActivity.this, "No file!!!!", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "No file!!!!", Toast.LENGTH_SHORT).show();
                 }
                 DriveContents driveContents = driveContentsResult.getDriveContents();
-
                 ParcelFileDescriptor parcelFileDescriptor = driveContents.getParcelFileDescriptor();
                 fileInputStream = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
                 currentTrack = (ArrayList<Position>) objectInputStream.readObject();
                 objectInputStream.close();
-
-//                InputStream inputStream = driveContents.getInputStream();
-//                ObjectInputStream ois = new ObjectInputStream(inputStream);
-//                currentTrack = (ArrayList<Position>) ois.readObject();
-//                ois.close();
-
-//                OutputStream outputStream = driveContents.getOutputStream();
-//                outputStream.write("LOCATION".getBytes());
                 com.google.android.gms.common.api.Status status = driveContents.commit(MainActivity.googleApiClient, null).await();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();

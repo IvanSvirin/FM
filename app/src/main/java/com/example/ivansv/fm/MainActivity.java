@@ -169,8 +169,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     MetadataBuffer mdb = result.getMetadataBuffer();
                     Metadata md = mdb.get(0);
                     driveId = md.getDriveId();
-//                    Metadata md = mdb.get(36);
-//                    driveId = md.getDriveId();
 //                    for (Metadata md : mdb) {
 //                        driveId = md.getDriveId();
 //                    }

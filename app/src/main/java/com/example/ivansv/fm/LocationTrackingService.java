@@ -135,7 +135,6 @@ public class LocationTrackingService extends Service {
                 position.setTime(loc.getTime());
                 if (currentTrack.size() > 4) currentTrack.remove(0);
                 currentTrack.add(position);
-//                writeTrack(currentTrack);
                 new EditContentsAsyncTask(currentTrack).execute();
                 Toast.makeText(getApplicationContext(), "Latitude" + loc.getLatitude(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "Longitude" + loc.getLongitude(), Toast.LENGTH_SHORT).show();
@@ -165,7 +164,7 @@ public class LocationTrackingService extends Service {
 
         @Override
         protected Void doInBackground(Void... params) {
-            FileOutputStream fileOutputStream = null;
+            FileOutputStream fileOutputStream;
 
             DriveFile file = MainActivity.driveId.asDriveFile();
             try {
@@ -175,15 +174,11 @@ public class LocationTrackingService extends Service {
                     Toast.makeText(LocationTrackingService.this, "No file!!!!", Toast.LENGTH_SHORT).show();
                 }
                 DriveContents driveContents = driveContentsResult.getDriveContents();
-
                 ParcelFileDescriptor parcelFileDescriptor = driveContents.getParcelFileDescriptor();
                 fileOutputStream = new FileOutputStream(parcelFileDescriptor.getFileDescriptor());
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
                 objectOutputStream.writeObject(positions);
                 objectOutputStream.close();
-
-//                OutputStream outputStream = driveContents.getOutputStream();
-//                outputStream.write("LOCATION".getBytes());
                 com.google.android.gms.common.api.Status status = driveContents.commit(MainActivity.googleApiClient, null).await();
             } catch (IOException e) {
                 e.printStackTrace();

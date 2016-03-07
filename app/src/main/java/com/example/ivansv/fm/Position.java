@@ -2,9 +2,6 @@ package com.example.ivansv.fm;
 
 import java.io.Serializable;
 
-/**
- * Created by ivansv on 12.12.2015.
- */
 public class Position implements Serializable{
     private double latitude;
     private double longitude;
