@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -41,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static int choice = 0;
     private Button startButton;
     private Button stopButton;
+    private RadioButton parentRadioButton;
+    private RadioButton childRadioButton;
+    private RadioGroup radioGroup;
     public static DriveId driveId;
 
     @Override
@@ -59,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
+        radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+//        parentRadioButton = (RadioButton) findViewById(R.id.parentRadioButton);
+//        childRadioButton = (RadioButton) findViewById(R.id.childRadioButton);
         startButton = (Button) findViewById(R.id.startButton);
         stopButton = (Button) findViewById(R.id.stopButton);
     }
@@ -76,7 +84,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .build();
         }
         googleApiClient.connect();
-        chooseDialog();
+//        chooseDialog();
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.parentRadioButton:
+                        choice = PARENT;
+                        break;
+                    case R.id.childRadioButton:
+                        choice = CHILD;
+                        break;
+                }
+            }
+        });
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 //                    for (Metadata md : mdb) {
 //                        driveId = md.getDriveId();
 //                    }
+//                    chooseDialog();
                 }
             };
 
@@ -204,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
                     driveId = result.getDriveFile().getDriveId();
                     showMessage("Created a file: " + driveId);
+//                    chooseDialog();
                 }
             };
 

@@ -30,4 +30,44 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="51dp"
         android:textSize="40sp" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="55dp"
+        android:id="@+id/radioGroup"
+        android:layout_marginLeft="70dp">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PARENT"
+            android:id="@+id/parentRadioButton"
+            android:textSize="30sp"
+            android:textColor="#000000" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CHILD"
+            android:id="@+id/childRadioButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="41dp"
+            android:textColor="#000000"
+            android:textSize="30sp" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="YOU ARE:"
+        android:id="@+id/textView"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/stopButton"
+        android:layout_toStartOf="@+id/stopButton" />
+
 </RelativeLayout>
