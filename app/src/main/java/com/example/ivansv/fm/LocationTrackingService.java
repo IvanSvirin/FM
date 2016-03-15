@@ -29,12 +29,12 @@ public class LocationTrackingService extends Service {
     public LocationManager locationManager;
     public MyLocationListener listener;
     public Location previousBestLocation = null;
-    ArrayList<Position> currentTrack;
+    private ArrayList<Position> sentTrack;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        currentTrack = new ArrayList<>();
+        sentTrack = new ArrayList<>();
         Toast.makeText(this, "CREATE_SERVICE", Toast.LENGTH_SHORT).show();
     }
 
@@ -48,8 +48,8 @@ public class LocationTrackingService extends Service {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 20000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000, 0, listener);
 //        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 0, listener);
 //        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 0, listener);
         return Service.START_STICKY;
@@ -133,9 +133,9 @@ public class LocationTrackingService extends Service {
                 position.setLatitude(loc.getLatitude());
                 position.setLongitude(loc.getLongitude());
                 position.setTime(loc.getTime());
-                if (currentTrack.size() > 4) currentTrack.remove(0);
-                currentTrack.add(position);
-                new EditContentsAsyncTask(currentTrack).execute();
+                if (sentTrack.size() > 4) sentTrack.remove(0);
+                sentTrack.add(position);
+                new EditContentsAsyncTask(sentTrack).execute();
                 Toast.makeText(getApplicationContext(), "Latitude" + loc.getLatitude(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "Longitude" + loc.getLongitude(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "Provider" + loc.getProvider(), Toast.LENGTH_SHORT).show();

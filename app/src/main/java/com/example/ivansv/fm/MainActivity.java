@@ -190,10 +190,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     MetadataBuffer mdb = result.getMetadataBuffer();
                     Metadata md = mdb.get(0);
                     driveId = md.getDriveId();
+// ONLY FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!
+//                    DriveFile file = MainActivity.driveId.asDriveFile();
+//                    file.delete(googleApiClient);
+
 //                    for (Metadata md : mdb) {
 //                        driveId = md.getDriveId();
 //                    }
 //                    chooseDialog();
+                    showMessage("Created a file: " + driveId);
                 }
             };
 

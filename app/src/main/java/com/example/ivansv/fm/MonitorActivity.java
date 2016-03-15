@@ -23,7 +23,7 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 public class MonitorActivity extends AppCompatActivity implements OnMapReadyCallback {
-    public static ArrayList<Position> currentTrack = new ArrayList<>();
+    public static ArrayList<Position> receivedTrack = new ArrayList<>();
     //    private DriveId selectedFileId;
     private boolean isSubscribed = false;
     //    private GoogleApiClient googleApiClient;
@@ -81,12 +81,12 @@ public class MonitorActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     public static class RetrieveContentsAsyncTask extends AsyncTask<Void, Void, Void> {
-        ArrayList<Position> positions;
+//        ArrayList<Position> positions;
 
-        public RetrieveContentsAsyncTask(ArrayList<Position> positions) {
-            super();
-            this.positions = positions;
-        }
+//        public RetrieveContentsAsyncTask(ArrayList<Position> positions) {
+//            super();
+//            this.positions = positions;
+//        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -103,7 +103,7 @@ public class MonitorActivity extends AppCompatActivity implements OnMapReadyCall
                 ParcelFileDescriptor parcelFileDescriptor = driveContents.getParcelFileDescriptor();
                 fileInputStream = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                currentTrack = (ArrayList<Position>) objectInputStream.readObject();
+                receivedTrack = (ArrayList<Position>) objectInputStream.readObject();
                 objectInputStream.close();
                 com.google.android.gms.common.api.Status status = driveContents.commit(MainActivity.googleApiClient, null).await();
             } catch (IOException | ClassNotFoundException e) {
