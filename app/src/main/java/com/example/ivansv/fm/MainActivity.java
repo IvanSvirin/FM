@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -41,8 +40,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static int choice = 0;
     private Button startButton;
     private Button stopButton;
-    private RadioButton parentRadioButton;
-    private RadioButton childRadioButton;
     private RadioGroup radioGroup;
 
     @Override
@@ -62,10 +59,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
-//        parentRadioButton = (RadioButton) findViewById(R.id.parentRadioButton);
-//        childRadioButton = (RadioButton) findViewById(R.id.childRadioButton);
         startButton = (Button) findViewById(R.id.startButton);
         stopButton = (Button) findViewById(R.id.stopButton);
+        if (FMApplication.driveId == null) {
+            startButton.setVisibility(View.INVISIBLE);
+            stopButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -104,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         break;
                     case CHILD:
                         startService(new Intent(MainActivity.this, LocationTrackingService.class));
+                        MainActivity.this.finish();
                         break;
                 }
             }
@@ -187,6 +187,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     MetadataBuffer mdb = result.getMetadataBuffer();
                     Metadata md = mdb.get(0);
                     FMApplication.driveId = md.getDriveId();
+
+                    startButton.setVisibility(View.VISIBLE);
+                    stopButton.setVisibility(View.VISIBLE);
+
 // ONLY FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!
 //                    DriveFile file = MainActivity.driveId.asDriveFile();
 //                    file.delete(googleApiClient);
@@ -229,6 +233,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     FMApplication.driveId = result.getDriveFile().getDriveId();
                     showMessage("Created a file: " + FMApplication.driveId);
 //                    chooseDialog();
+
+                    startButton.setVisibility(View.VISIBLE);
+                    stopButton.setVisibility(View.VISIBLE);
+
                 }
             };
 

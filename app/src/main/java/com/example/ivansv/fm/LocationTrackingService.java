@@ -15,9 +15,11 @@ import android.os.ParcelFileDescriptor;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.DriveId;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,12 +32,16 @@ public class LocationTrackingService extends Service {
     public MyLocationListener listener;
     public Location previousBestLocation = null;
     private ArrayList<Position> sentTrack;
+    private static GoogleApiClient googleApiClient;
+    private static DriveId driveId;
 
     @Override
     public void onCreate() {
         super.onCreate();
         sentTrack = new ArrayList<>();
         Toast.makeText(this, "CREATE_SERVICE", Toast.LENGTH_SHORT).show();
+        googleApiClient = FMApplication.googleApiClient;
+        driveId = FMApplication.driveId;
     }
 
     @Override
@@ -166,10 +172,10 @@ public class LocationTrackingService extends Service {
         protected Void doInBackground(Void... params) {
             FileOutputStream fileOutputStream;
 
-            DriveFile file = FMApplication.driveId.asDriveFile();
+            DriveFile file = driveId.asDriveFile();
             try {
                 DriveApi.DriveContentsResult driveContentsResult = file.open(
-                        FMApplication.googleApiClient, DriveFile.MODE_READ_WRITE, null).await();
+                        googleApiClient, DriveFile.MODE_READ_WRITE, null).await();
                 if (!driveContentsResult.getStatus().isSuccess()) {
                     Toast.makeText(LocationTrackingService.this, "No file!!!!", Toast.LENGTH_SHORT).show();
                 }
@@ -179,7 +185,7 @@ public class LocationTrackingService extends Service {
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
                 objectOutputStream.writeObject(positions);
                 objectOutputStream.close();
-                com.google.android.gms.common.api.Status status = driveContents.commit(FMApplication.googleApiClient, null).await();
+                com.google.android.gms.common.api.Status status = driveContents.commit(googleApiClient, null).await();
             } catch (IOException e) {
                 e.printStackTrace();
             }
