@@ -166,10 +166,10 @@ public class LocationTrackingService extends Service {
         protected Void doInBackground(Void... params) {
             FileOutputStream fileOutputStream;
 
-            DriveFile file = MainActivity.driveId.asDriveFile();
+            DriveFile file = FMApplication.driveId.asDriveFile();
             try {
                 DriveApi.DriveContentsResult driveContentsResult = file.open(
-                        MainActivity.googleApiClient, DriveFile.MODE_READ_WRITE, null).await();
+                        FMApplication.googleApiClient, DriveFile.MODE_READ_WRITE, null).await();
                 if (!driveContentsResult.getStatus().isSuccess()) {
                     Toast.makeText(LocationTrackingService.this, "No file!!!!", Toast.LENGTH_SHORT).show();
                 }
@@ -179,7 +179,7 @@ public class LocationTrackingService extends Service {
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
                 objectOutputStream.writeObject(positions);
                 objectOutputStream.close();
-                com.google.android.gms.common.api.Status status = driveContents.commit(MainActivity.googleApiClient, null).await();
+                com.google.android.gms.common.api.Status status = driveContents.commit(FMApplication.googleApiClient, null).await();
             } catch (IOException e) {
                 e.printStackTrace();
             }

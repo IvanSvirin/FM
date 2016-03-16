@@ -54,15 +54,15 @@ public class MonitorActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     private void toggle() {
-        if (MainActivity.driveId == null) {
+        if (FMApplication.driveId == null) {
             return;
         }
-        DriveFile file = MainActivity.driveId.asDriveFile();
+        DriveFile file = FMApplication.driveId.asDriveFile();
         if (!isSubscribed) {
-            file.addChangeListener(MainActivity.googleApiClient, changeListener);
+            file.addChangeListener(FMApplication.googleApiClient, changeListener);
             isSubscribed = true;
         } else {
-            file.removeChangeListener(MainActivity.googleApiClient, changeListener);
+            file.removeChangeListener(FMApplication.googleApiClient, changeListener);
             isSubscribed = false;
         }
     }
@@ -92,10 +92,10 @@ public class MonitorActivity extends AppCompatActivity implements OnMapReadyCall
         protected Void doInBackground(Void... params) {
             FileInputStream fileInputStream;
 
-            DriveFile file = MainActivity.driveId.asDriveFile();
+            DriveFile file = FMApplication.driveId.asDriveFile();
             try {
                 DriveApi.DriveContentsResult driveContentsResult = file.open(
-                        MainActivity.googleApiClient, DriveFile.MODE_READ_WRITE, null).await();
+                        FMApplication.googleApiClient, DriveFile.MODE_READ_WRITE, null).await();
                 if (!driveContentsResult.getStatus().isSuccess()) {
 //                    Toast.makeText(this, "No file!!!!", Toast.LENGTH_SHORT).show();
                 }
@@ -105,7 +105,7 @@ public class MonitorActivity extends AppCompatActivity implements OnMapReadyCall
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
                 receivedTrack = (ArrayList<Position>) objectInputStream.readObject();
                 objectInputStream.close();
-                com.google.android.gms.common.api.Status status = driveContents.commit(MainActivity.googleApiClient, null).await();
+                com.google.android.gms.common.api.Status status = driveContents.commit(FMApplication.googleApiClient, null).await();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

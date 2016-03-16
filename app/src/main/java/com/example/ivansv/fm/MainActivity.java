@@ -25,7 +25,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveFolder;
-import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataBuffer;
 import com.google.android.gms.drive.MetadataChangeSet;
@@ -39,14 +38,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final int REQUEST_CODE_RESOLUTION = 1;
     private static final int PARENT = 0;
     private static final int CHILD = 1;
-    public static GoogleApiClient googleApiClient;
     private static int choice = 0;
     private Button startButton;
     private Button stopButton;
     private RadioButton parentRadioButton;
     private RadioButton childRadioButton;
     private RadioGroup radioGroup;
-    public static DriveId driveId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +71,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(this)
+        if (FMApplication.googleApiClient == null) {
+            FMApplication.googleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(Drive.API)
                     .addScope(Drive.SCOPE_FILE)
 //                    .addScope(Drive.SCOPE_APPFOLDER) // required for App Folder sample
@@ -83,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .addOnConnectionFailedListener(this)
                     .build();
         }
-        googleApiClient.connect();
+        FMApplication.googleApiClient.connect();
 //        chooseDialog();
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -151,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                     Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_RESOLUTION && resultCode == RESULT_OK) {
-            googleApiClient.connect();
+            FMApplication.googleApiClient.connect();
         }
     }
 
@@ -162,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onBackPressed() {
-        if (googleApiClient != null) {
-            googleApiClient.disconnect();
+        if (FMApplication.googleApiClient != null) {
+            FMApplication.googleApiClient.disconnect();
         }
         super.onBackPressed();
     }
@@ -189,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
                     MetadataBuffer mdb = result.getMetadataBuffer();
                     Metadata md = mdb.get(0);
-                    driveId = md.getDriveId();
+                    FMApplication.driveId = md.getDriveId();
 // ONLY FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!
 //                    DriveFile file = MainActivity.driveId.asDriveFile();
 //                    file.delete(googleApiClient);
@@ -198,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 //                        driveId = md.getDriveId();
 //                    }
 //                    chooseDialog();
-                    showMessage("Created a file: " + driveId);
+                    showMessage("Created a file: " + FMApplication.driveId);
                 }
             };
 
@@ -229,8 +226,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         showMessage("Error while trying to create the file");
                         return;
                     }
-                    driveId = result.getDriveFile().getDriveId();
-                    showMessage("Created a file: " + driveId);
+                    FMApplication.driveId = result.getDriveFile().getDriveId();
+                    showMessage("Created a file: " + FMApplication.driveId);
 //                    chooseDialog();
                 }
             };
@@ -262,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     //Getter for the {@code GoogleApiClient}
     public GoogleApiClient getGoogleApiClient() {
-        return googleApiClient;
+        return FMApplication.googleApiClient;
     }
 
     @Override
